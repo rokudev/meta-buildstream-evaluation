@@ -1,0 +1,12 @@
+diff -ur glibc.old/elf/Makefile glibc/elf/Makefile
+--- glibc.old/elf/Makefile	2019-09-11 18:50:59.096465206 +0200
++++ glibc/elf/Makefile	2019-09-11 20:24:00.196951762 +0200
+@@ -537,7 +537,7 @@
+ 	$(make-target-directory)
+ 	echo "$(subst :, ,$(default-rpath) $(user-defined-trusted-dirs))"    \
+ 	| $(AWK) -f gen-trusted-dirs.awk > ${@:st=T};
+-	echo '#define DL_DST_LIB "$(notdir $(slibdir))"' >> ${@:st=T}
++	echo "#define DL_DST_LIB \"$$(realpath $(slibdir) --relative-to=$(prefix))\"" >> ${@:st=T}
+ 	$(move-if-change) ${@:st=T} ${@:st=h}
+ 	touch $@
+ CPPFLAGS-dl-load.c += -I$(objpfx). -I$(csu-objpfx).

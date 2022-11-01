@@ -1,0 +1,27 @@
+.bst*
+.cache
+*~
+*#
+*.#*
+*.bak
+*.orig
+*.rej
+*.DS_Store
+.project
+.cproject
+.settings
+Thumbs.db
+*emacs.d/backups
+*emacs.d/auto-save-list
+recentf
+scripts/bst-here
+
+# Prevent artifact checkouts from getting committed to Git by accident
+# All subdirectories in 'elements' should be listed here:
+/base
+/components
+/platform
+/plugins
+/system
+/toolchain
+/image

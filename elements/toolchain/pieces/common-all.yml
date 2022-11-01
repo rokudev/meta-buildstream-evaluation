@@ -1,0 +1,57 @@
+depends:
+  - base/base.bst
+
+build-depends:
+  - system/helper-scripts.bst
+
+variables:
+  toolchain_name: "RBST"
+
+  # Force a cross-compile:
+  host_vendor: "cowboybootstrap"
+
+  # Redefine variables.yml host cc vars to include our bootstrap prefix
+  host_ar: "%{host_c_prefix}ar"
+  host_as: "%{host_c_prefix}as"
+  host_cc: "%{host_c_prefix}gcc"
+  host_cpp: "%{host_c_prefix}cpp"
+  host_cxx: "%{host_c_prefix}g++"
+  host_ld: "%{host_c_prefix}ld"
+  host_nm: "%{host_c_prefix}nm"
+  host_objcopy: "%{host_c_prefix}objcopy"
+  host_objdump: "%{host_c_prefix}objdump"
+  host_ranlib: "%{host_c_prefix}ranlib"
+  host_size: "%{host_c_prefix}size"
+  host_strings: "%{host_c_prefix}strings"
+  host_strip: "%{host_c_prefix}strip"
+
+  # Target stuff
+  crosslibpath: "%{path_cross_toolchain_sysroot}/lib:%{path_staging_sysroot}/usr/lib:%{path_staging_sysroot}/lib"
+
+  # Common args
+  build-dir: "."
+  make-args:
+  make-targets:
+  make: make -C %{build-dir} %{make-args} %{make-targets}
+  make-install-args: DESTDIR="%{install-root}"
+  make-install-targets: install
+  make-install: make -C %{build-dir} -j1 %{make-install-args} %{make-install-targets}
+
+  docdisableargs: >-
+    --disable-gtk-doc
+    --disable-gtk-doc-html
+    --disable-doc
+    --disable-docs
+    --disable-documentation
+    --with-xmlto=no
+    --with-fop=no
+
+  confdirargs: >-
+    --sysconfdir=%{path_cross_toolchain}/etc
+    --localstatedir=%{path_cross_toolchain}/var
+
+  get_little_helpers: "source %{path_system}/little-helpers.sh"
+
+environment:
+  PATH: "%{path_cross_toolchain}/bin:%{path_default}"
+  STAGING_DIR: "%{path_cross_toolchain}"

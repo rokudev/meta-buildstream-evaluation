@@ -1,0 +1,3 @@
+# Special items when debug mode is on
+variables:
+  image_suffix: "-debug"

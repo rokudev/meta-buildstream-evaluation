@@ -1,0 +1,61 @@
+(@):
+- elements/toolchain/pieces/common-all.yml
+
+sources:
+- kind: tar
+  url: gnu:binutils/binutils-2.39.tar.xz
+  ref: 645c25f563b8adc0a81dbd6a41cffbf4d37083a382e02d5d3df4f65c09516d00
+- kind: patch_queue
+  path: patches/binutils
+
+variables:
+  build-dir: build_dir
+  conf-args: >-
+    --build=%{host_triplet_full}
+    --host=%{host_triplet_full}
+    --target=%{target_triplet_full}
+    --prefix=%{path_cross_toolchain}
+    %{confdirargs}
+    --with-sysroot=%{path_cross_toolchain_sysroot}
+    --with-pkgversion="%{toolchain_name} Binutils"
+    --with-gnu-ld
+    --with-gnu-as
+    --with-lib-path=%{crosslibpath}
+    --enable-deterministic-archives
+    --enable-gold=yes
+    --enable-ld=default
+    --enable-plugins
+    --enable-relro=yes
+    --enable-shared
+    --enable-lto
+    --enable-poison-system-directories
+    --disable-bootstrap
+    --disable-multilib
+    --disable-werror
+    --disable-nls
+    --disable-static
+    --disable-sim
+    --disable-gdb
+    --without-debuginfod
+    %{docdisableargs}
+    %{target_configureargs_arch}
+
+config:
+  configure-commands:
+    (<):
+    - sed -i 's, " Linaro.*,,' bfd/version.h
+
+  install-commands:
+    (>):
+    # Binutils owns <tc>/usr and <sysroot>/usr symlinks
+    - |
+      mkdir -p %{install-root}%{path_cross_toolchain_sysroot}/include
+      touch %{install-root}%{path_cross_toolchain_sysroot}/include/.created-by-binutils
+
+      rm -f %{install-root}%{path_cross_toolchain}/share/info/dir
+      rm -rf %{install-root}%{path_cross_toolchain}/share/man
+
+      %{get_little_helpers}
+      FixupUsrdir %{install-root}%{path_cross_toolchain}
+      FixupUsrdir %{install-root}%{path_cross_toolchain_sysroot}
+      TripletSymlinks %{install-root}%{path_cross_toolchain} %{target_triplet_full} %{target_triplet}

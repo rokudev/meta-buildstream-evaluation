@@ -1,0 +1,15 @@
+description: RSync 3.2.6
+
+sources:
+- kind: tar
+  url: samba:rsync/src/rsync-3.2.6.tar.gz
+  ref: fb3365bab27837d41feaf42e967c57bd3a47bc8f10765a3671efd6a3835454d3
+
+variables:
+  conf-local: >-
+    --without-included-zlib
+    --disable-xxhash
+    --disable-zstd
+    --disable-md2man
+    --disable-openssl
+    --disable-lz4

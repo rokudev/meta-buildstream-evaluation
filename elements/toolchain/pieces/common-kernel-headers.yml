@@ -1,0 +1,31 @@
+(@):
+- elements/toolchain/pieces/common-all.yml
+
+# This is intentionally NOT the same as components/common/linux.yml
+sources:
+- kind: tar
+  url: kernel:linux/kernel/v5.x/linux-5.15.67.tar.xz
+  ref: da47d9a80b694548835ccb553b6eb1a1f3f5d5cddd9e2bd6f4886b99ca14f940
+
+variables:
+  make-args:
+  make-targets: mrproper
+  
+  make-install-args: >-
+    ARCH="%{kernel_arch}"
+    INSTALL_HDR_PATH="%{install-root}%{path_cross_toolchain_sysroot}/usr" 
+  
+  make-install-targets: headers_install
+
+
+config:
+  # Since binutils owns the usr symlink, only temporarily create, then remove:
+  build-commands:
+    (<):
+    - |
+      mkdir -p %{install-root}%{path_cross_toolchain_sysroot}
+      ln -sfv . %{install-root}%{path_cross_toolchain_sysroot}/usr
+    
+  install-commands:
+    (>):
+    - rm %{install-root}%{path_cross_toolchain_sysroot}/usr

@@ -1,0 +1,10 @@
+# Variables for all 64-bit cross-target archs
+variables:
+  target_arch_is_64: "true"
+
+  # Crosstool-ng sets this, but is apparently bad?
+  #   See https://www.openwall.com/lists/musl/2020/02/03/20
+  # target_cppflags_arch: >-
+  #   -D_LARGEFILE_SOURCE
+  #   -D_LARGEFILE64_SOURCE
+  #   -D_FILE_OFFSET_BITS=64

@@ -1,0 +1,4 @@
+#! /bin/sh
+# basic startup stuff
+
+ifconfig lo 127.0.0.1

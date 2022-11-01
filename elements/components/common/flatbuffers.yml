@@ -1,0 +1,4 @@
+sources:
+  - kind: tar
+    url: github-public:google/flatbuffers/archive/refs/tags/v22.9.29.tar.gz
+    ref: 372df01795c670f6538055a7932fc7eb3e81b3653be4a216c081e9c3c26b1b6d

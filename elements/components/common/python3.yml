@@ -1,0 +1,14 @@
+description: Python 3.10.7
+
+sources:
+- kind: tar
+  url: python:3.10.7/Python-3.10.7.tar.xz
+  ref: 6eed8415b7516fb2f260906db5d48dd4c06acc0cb24a7d6cc15296a604dcdc48
+- kind: patch_queue
+  path: patches/python3.10
+
+config:
+  install-commands:
+    (>):
+    - ln -s %{python_inst}python{3,}
+    - ln -s %{python_inst}pip{3,}

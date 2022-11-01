@@ -1,0 +1,80 @@
+# Variables for all cross-platforms, regardless of cross arch
+variables:
+  # Paths for cross-compiling
+  path_cross_toolchain: "%{path_toolchains}/%{cross_toolchain_name}"
+  # NOTE: Toolchain's sysroot is only for its own internal usage
+  #       You are probably looking for "path_staging_sysroot" (in variables.yml) instead.
+  rel_toolchain_sysroot: "%{target_triplet_full}/sysroot"
+  path_cross_toolchain_sysroot: "%{path_cross_toolchain}/%{rel_toolchain_sysroot}"
+
+  # By default, we use `target_triplet_full`, in order to fake-out x64 -> x64 cross-compiling
+  target_arch: "%{target_arch_set}"
+  target_triplet: "%{target_arch}-linux-%{target_abi}"
+  target_triplet_full: "%{target_arch}-%{target_vendor}-linux-%{target_abi}"
+  cross_toolchain_name: "%{target_arch}-%{target_vendor}-%{target_abi}-toolchain"
+  target_abi: "gnu"
+  target_vendor: "rbst"
+  target_arch_is_64: "false"
+
+  # For kernel arch and config usage
+  kernel_arch: "%{target_arch}"
+  # Kernel 'SoC' is the family and/or variant of arch above. Both can be blank:
+  kernel_soc_family: "%{kernel_arch}"
+  kernel_soc_name:
+  # Kernel variables:
+  kernel_imgname: "$(make -s image_name)"
+  kernel_dtsdir: "arch/%{kernel_arch}/boot/dts"
+
+  # Cross Compilers
+  cross_c_prefix: "%{target_triplet_full}-"
+  cross_cc: "%{cross_c_prefix}gcc"
+  cross_cxx: "%{cross_c_prefix}g++"
+  cross_ld: "%{cross_c_prefix}ld"
+  cross_addr2line: "%{cross_c_prefix}addr2line"
+  cross_ar: "%{cross_c_prefix}ar"
+  cross_as: "%{cross_c_prefix}as"
+  cross_cpp: "%{cross_c_prefix}cpp"
+  cross_gdb: "%{cross_c_prefix}gdb"
+  cross_nm: "%{cross_c_prefix}nm"
+  cross_ranlib: "%{cross_c_prefix}ranlib"
+  cross_readelf: "%{cross_c_prefix}readelf"
+  cross_objcopy: "%{cross_c_prefix}objcopy"
+  cross_objdump: "%{cross_c_prefix}objdump"
+  cross_size: "%{cross_c_prefix}size"
+  cross_strings: "%{cross_c_prefix}strings"
+  cross_strip: "%{cross_c_prefix}strip"
+
+  # These compile args/vars for ALL cross-components:
+  # Do not abuse. This should be a short list:
+  target_cflags_common: >-
+    -Os
+    -pipe
+    -fno-caller-saves
+    -g3
+    -fstack-protector
+    -D_FORTIFY_SOURCE=1
+    -Wl,-z,now
+    -Wl,-z,relro
+
+  # TODO: Can our cross GCC be configured to auto-add this?
+  #       We were successful in getting LD to auto-add sysroot paths.
+  target_cppflags_common: >-
+    -I%{path_staging_sysroot}/usr/include
+
+  target_ldflags_common:
+    -znow
+    -zrelro
+
+  # To be defined by particular archs, should be blank here:
+  target_cflags_arch:
+  target_cxxflags_arch:
+  target_cppflags_arch:
+  target_ldflags_arch:
+  target_configureargs_arch:
+
+  # Do not redefine these (unless you really really want to override them):
+  target_cppflags: "%{target_cppflags_common} %{target_cppflags_arch} %{cppflags-local}"
+  target_cflags: "%{target_cppflags} %{target_cflags_common} %{target_cflags_arch} %{cflags-local}"
+  target_cxxflags: "%{target_cflags} %{target_cxxflags_arch} %{cxxflags-local}"
+  target_ldflags: "%{target_ldflags_common} %{target_ldflags_arch} %{ldflags-local}"
+  target_configureargs: "%{target_configureargs_arch} %{conf-local}"

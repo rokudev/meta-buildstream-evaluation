@@ -1,0 +1,18 @@
+Unless otherwise stated in individual files, this work is licensed to you under
+the following terms.
+
+Files found in patches/*/ are available under the same license as the upstream
+software they apply to.
+
+Files from OpenWrt are provided under the GNU General Public License version 2
+to be found here:
+    LICENSES/gpl2.txt
+
+Files from FreeDesktopSDK are provided under the MIT License, a copy of which
+can be found here:
+    LICENSES/mit-fdsdk.txt
+
+Other files not covered by the above licenses, and not covered by an individual
+license specified in the file itself, or an accompanying file, are available
+under the Apache License, Version 2.0 (the "License") to be found here:
+    LICENSES/apache-2.0.txt

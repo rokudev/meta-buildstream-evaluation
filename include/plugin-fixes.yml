@@ -1,0 +1,29 @@
+# Global overrides for certain element kinds:
+elements:
+  # TODO: See components/host/firmware-utils.bst, a component that uses CMake.
+  #       CMake elements cannot currently auto-add the host tool cmake dependency.
+  #       Open BuildStream ticket over 'depends' lists:
+  #           https://github.com/apache/buildstream/issues/1769
+  #       Ideally, it should work like the commented bit below.
+  #       However, all 'cmake' elements need to manually add right now. Not ideal.
+  # cmake:
+  #   build-depends:
+  #     - components/host/cmake.bst
+
+  # Autotools plugin is broken when trying to do out-of-tree builds.
+  # See upstream issue: https://github.com/apache/buildstream-plugins/pull/29
+  # Attempt fix, revert to 1.95.1 behavior, which is preferable for us:
+  autotools:
+    variables:
+      build-dir: "."
+      configure: "%{build-root}/configure %{conf-args}"
+      make-args: >-
+        -C "%{build-dir}"
+    config:
+      configure-commands:
+      - |
+        %{autogen}
+      - |
+        mkdir -p "%{build-dir}"
+        cd "%{build-dir}"
+        %{configure}

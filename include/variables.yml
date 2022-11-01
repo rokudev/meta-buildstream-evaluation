@@ -1,0 +1,81 @@
+# Global variables for ALL builds
+variables:
+  project_name: "rbst-eval"
+  project_name_short: "rbst"
+  project_version: "20.10"  # Placeholder -- CI should set this in yet *another* buildstream project option
+
+  path_default: "/usr/bin:/bin:/usr/sbin:/sbin"
+  # Common build system paths for all builds
+  path_tools: "/rbst"
+  path_system: "%{path_tools}/system"                    # For helper scripts as dependencies
+  path_toolchains: "%{path_tools}/toolchains"            # Only host tools not installed directly to sandbox
+  # Staging:
+  # "path_staging_sysroot" is the set DESTDIR where cross-components "make install" to.
+  #   All development installables go here (/include headers, unstripped .so's and executables, manpages, etc.)
+  path_staging_sysroot: "%{path_tools}/staging/sysroot"
+  # "path_staging_imageprep" is where each component selectively copies and/or strips installables from
+  #   staging_sysroot above to what will be the final image for your device. (Original files in sysroot are untouched.)
+  path_staging_imageprep: "%{path_tools}/staging/image"
+
+  # Device paths
+  path_boot: /boot
+
+  # Common args
+  strip_args: "--strip-unneeded"
+
+  # Provided so non-compliant platforms can (and should) override the value:
+  platform_type: "pristine"
+
+  # Common final artifact filenames
+  artifact_header: "rbst-"
+  image_suffix: ""
+
+  # To be defined by a component (host or cross):
+  cflags-local:
+  cppflags-local:
+  cxxflags-local:
+  ldflags-local:
+  conf-local:
+
+
+# Sandbox/host defines. Possibly will be separated like "crossarch" later if needed:
+(@):
+- include/hostarch/common.yml
+
+
+# All conditionals should be done at one time here:
+(?):
+# First, check our 'target_arch' option and include appropriate cross variables
+- target_arch == "aarch64":
+    (@):
+    - include/targetarch/aarch64.yml
+- target_arch == "arm":
+    (@):
+    - include/targetarch/arm.yml
+- target_arch == "armhf":
+    (@):
+    - include/targetarch/armhf.yml
+- target_arch == "x86_64":
+    (@):
+    - include/targetarch/x86_64.yml
+# Second, check our 'platform' option and set platform-specific variables
+- platform == "rpi":
+    (@):
+    - include/platforms/rpi.yml
+# Debug option overrides some image variables:
+- debug == true:
+    (@):
+    - include/debug.yml
+
+
+# For the previous arch-specific includes, there isn't really a way to say "else": "error".
+# So just do a variable test. All the arch-specific.yml should have included crossarch/common.yml
+# Some of the below envvars' variables should only have existed there:
+environment:
+  LC_ALL: en_US.UTF-8
+  PATH_TOOLS: "%{path_tools}"
+  PATH_TOOLCHAINS: "%{path_toolchains}"
+  PATH_CROSS_TOOLCHAIN: "%{path_cross_toolchain}"
+  TARGET_ARCH_IS_64: "%{target_arch_is_64}"
+  COMPONENT_NAME: "%{element-name}"  # Not sure why the element name isn't by default provided as an envvar during build, but here you go!
+

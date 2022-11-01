@@ -1,0 +1,64 @@
+variables:
+  kernel_soc_family: "bcm27xx"
+
+  (?):
+  - target_arch in ["arm", "armhf"]:
+      # 2708, 2709, 2710, 2711
+      platform_name: "Raspberry Pi (32-bit, RPi A/B/2B/0*/3A*/3B*/4B)"
+      pikernelimg: "kernel.img"
+      kernel_soc_name: "bcm2709" # Rpi 2B/2B1.2/3B/3B+/4B
+      # DTS files for 32-bit 'arm' in root dir:
+      device-dts: >-
+        bcm2711-rpi-4-b
+        bcm2711-rpi-400
+        bcm2835-rpi-a-plus
+        bcm2835-rpi-a
+        bcm2835-rpi-b-plus
+        bcm2835-rpi-b-rev2
+        bcm2835-rpi-b
+        bcm2835-rpi-cm1-io1
+        bcm2835-rpi-zero-w
+        bcm2835-rpi-zero
+        bcm2836-rpi-2-b
+        bcm2837-rpi-3-a-plus
+        bcm2837-rpi-3-b-plus
+        bcm2837-rpi-3-b
+        bcm2837-rpi-cm3-io3
+
+      # Include 32-bit firmware files:
+      firmware-files: >-
+        bootcode.bin
+        start.elf
+        start_cd.elf
+        start_x.elf
+        fixup.dat
+        fixup_cd.dat
+        fixup_x.dat
+
+  - target_arch == "aarch64":
+      # 2710, 2711
+      platform_name: "Raspberry Pi (32-bit, RPi 3A+/3B*/4B)"
+      pikernelimg: "kernel8.img"
+      kernel_soc_name: "bcm2710" # Rpi 3B/3B+/4B
+      # DTS files for 64-bit 'arm64' in 'broadcom' subdir:
+      device-dts: >-
+        broadcom/bcm2711-rpi-4-b
+        broadcom/bcm2711-rpi-400
+        broadcom/bcm2837-rpi-3-a-plus
+        broadcom/bcm2837-rpi-3-b-plus
+        broadcom/bcm2837-rpi-3-b
+        broadcom/bcm2837-rpi-cm3-io3
+
+      # Include 64-bit firmware files:
+      firmware-files: >-
+        bootcode.bin
+        start4.elf
+        start4cd.elf
+        start4x.elf
+        fixup4.dat
+        fixup4cd.dat
+        fixup4x.dat
+
+  - target_arch not in ["arm", "armhf", "aarch64"]:
+      (!): "cannot use rpi without an rpi arch"
+

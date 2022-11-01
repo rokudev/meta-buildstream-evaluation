@@ -1,0 +1,12 @@
+(@):
+- include/targetarch/common.yml
+- include/targetarch/64bit.yml
+
+variables:
+  kernel_arch: arm64
+  mcpu: cortex-a53
+  # Default image file is not EFI compatible
+  kernel_imgname: arch/arm64/boot/Image
+
+  target_cflags_arch: >-
+    -mcpu=%{mcpu}

@@ -1,0 +1,173 @@
+# Due to YAML list weirdness, make sure this is the FIRST file you include in your component
+# Include this file from your component if it compiles for the cross-platform
+depends:
+  - base/base.bst
+  - toolchain/cross-compiler.bst
+
+build-depends: []
+
+
+variables:
+  destdir: "%{install-root}%{path_staging_sysroot}/"
+  # Resetting DESTDIR in common 'make install' requires squashing the whole thing:
+  build-dir: "."
+  make-args:
+  make-targets:
+  make: "make -C %{build-dir} %{make-args} %{make-targets}"
+  make-install-args: DESTDIR="%{destdir}" PREFIX="%{prefix}"
+  make-install-targets: install
+  make-install: "make -C %{build-dir} -j1 %{make-args} %{make-install-args} %{make-install-targets}"
+
+  pkgconfig: "/usr/bin/pkg-config" # --define-prefix"
+  pkgconfigpath: "%{path_staging_sysroot}/usr/lib/pkgconfig:%{path_staging_sysroot}/usr/share/pkgconfig"
+
+  # Autotools override:
+  conf-global: >-
+    --target=%{target_triplet_full}
+    --host=%{target_triplet_full}
+    --build=%{host_triplet_full}
+    %{target_configureargs}
+
+  # CMake override, a bit more involved:
+  cmake-global: >-
+    -DCMAKE_BUILD_TYPE=Release
+    -DCMAKE_C_COMPILER=%{path_cross_toolchain}/bin/%{cross_cc}
+    -DCMAKE_CXX_COMPILER=%{path_cross_toolchain}/bin/%{cross_cxx}
+    -DCMAKE_ASM_COMPILER=%{path_cross_toolchain}/bin/%{cross_cc}
+    -DCMAKE_SYSTEM_NAME=Linux
+    -DCMAKE_SYSTEM_VERSION=1
+    -DCMAKE_SYSTEM_PROCESSOR=%{target_arch}
+    -DCMAKE_VERBOSE_MAKEFILE=ON
+    -DCMAKE_AR=%{path_cross_toolchain}/bin/%{cross_ar}
+    -DCMAKE_NM=%{path_cross_toolchain}/bin/%{cross_nm}
+    -DCMAKE_RANLIB=%{path_cross_toolchain}/bin/%{cross_ranlib}
+    -DCMAKE_OBJCOPY=%{path_cross_toolchain}/bin/%{cross_objcopy}
+    -DCMAKE_OBJDUMP=%{path_cross_toolchain}/bin/%{cross_objdump}
+    -DCMAKE_C_FLAGS_RELEASE="-DNDEBUG"
+    -DCMAKE_CXX_FLAGS_RELEASE="-DNDEBUG"
+    -DCMAKE_EXE_LINKER_FLAGS:STRING="%{target_ldflags}"
+    -DCMAKE_MODULE_LINKER_FLAGS:STRING="%{target_ldflags} -Wl,-Bsymbolic-functions"
+    -DCMAKE_SHARED_LINKER_FLAGS:STRING="%{target_ldflags} -Wl,-Bsymbolic-functions"
+    -DCMAKE_FIND_ROOT_PATH="%{path_staging_sysroot}"
+    -DCMAKE_FIND_ROOT_PATH_MODE_PROGRAM=BOTH
+    -DCMAKE_FIND_ROOT_PATH_MODE_LIBRARY=ONLY
+    -DCMAKE_FIND_ROOT_PATH_MODE_INCLUDE=ONLY
+    -DCMAKE_STRIP=:
+    -DCMAKE_PREFIX_PATH=%{path_staging_sysroot}
+    -DCMAKE_SKIP_RPATH=TRUE
+    -DCMAKE_INSTALL_PREFIX=%{prefix}
+
+  # For strip-binaries, this will auto-strip anything added to %{path_staging_imageprep}
+  # Exclude filenames you do NOT want stripped with the "strip-exclude" var.
+  strip-exclude:
+  # Yes I know generating the 'find' command is a bit messy:
+  strip-binaries: |
+    find_exclude=()
+    for efname in %{strip-exclude}; do
+      find_exclude+=("-not -name ${efname}")
+    done
+
+    find_args=""
+    for exarg in "${find_exclude}"; do
+      [ -z "${exarg}" ] && continue
+      if [ -z "${find_args}" ]; then
+        find_args="( ${exarg}"
+      else
+        find_args+=" -and ${exarg}"
+      fi
+    done
+    [ ! -z "${find_args}" ] && find_args+=" )"
+
+    set -ex
+    while IFS= read -r -d '' file; do
+      echo "~+== strip-binaries: Stripping found file: ${file}"
+      %{cross_strip} %{strip_args} ${file} || (echo "*** WARNING: Could not strip file: ${file}" && true)
+    
+    done < <(find %{install-root}%{path_staging_imageprep} -type f ${find_args} -print0)
+
+
+environment:
+  IS_CROSS_COMPILING: "true"
+
+  # Installables
+  # "PATH_STAGING_SYSROOT" should be automatically used by the
+  #   toolchain for finding header files and libs.
+  #   It's given a few envvar names here for compatibility.
+  # "DESTDIR" is the same, but with "%{install-root}" prefixed.
+  PATH_STAGING_SYSROOT: "%{path_staging_sysroot}"
+  PATH_SYSROOT: "%{path_staging_sysroot}"
+  SYSROOT: "%{path_staging_sysroot}"
+  DESTDIR: "%{destdir}"
+  # "PATH_STAGING_IMAGE" is for stripped image-installables only, not for dev use.
+  PATH_STAGING_IMAGE: "%{path_staging_imageprep}"
+
+  # "STAGING_DIR" is a special variable not related to staging-sysroot above.
+  # It is used by the toolchain for relocatability, similar naming unfortunate:
+  STAGING_DIR: "%{path_cross_toolchain}"
+
+  PATH: "%{path_cross_toolchain}/bin:%{path_default}"
+
+  # pkg-config needs some massaging in order to play nice:
+  PKG_CONFIG: "%{pkgconfig}"
+  PKG_CONFIG_PATH: "%{pkgconfigpath}"
+  PKG_CONFIG_LIBDIR: "%{pkgconfigpath}"
+  PKG_CONFIG_SYSROOT_DIR: "%{path_staging_sysroot}"
+
+  ARCH: "%{target_arch}"
+
+  CROSS_COMPILE: "%{cross_c_prefix}"
+  CROSS: "%{cross_c_prefix}"
+
+  # Tools, primary
+  CC: "%{cross_cc}"
+  GCC: "%{cross_cc}"
+  CXX: "%{cross_cxx}"
+  GXX: "%{cross_cxx}"
+  LD: "%{cross_ld}"
+  # Tools, other
+  ADDR2LINE: "%{cross_addr2line}"
+  AR: "%{cross_ar}"
+  AS: "%{cross_as}"
+  CPP: "%{cross_cpp}"
+  NM: "%{cross_nm}"
+  RANLIB: "%{cross_ranlib}"
+  READELF: "%{cross_readelf}"
+  OBJCOPY: "%{cross_objcopy}"
+  OBJDUMP: "%{cross_objdump}"
+  SIZE: "%{cross_size}"
+  STRINGS: "%{cross_strings}"
+  STRIP: "%{cross_strip}"
+
+  # Common flags, set by include/targetarch/common.yml
+  CFLAGS: "%{target_cflags}"
+  CPPFLAGS: "%{target_cppflags}"
+  CXXFLAGS: "%{target_cxxflags}"
+  LDFLAGS: "%{target_ldflags}"
+
+  # For convenience, tell element what our host compilers are as well:
+  HOST_CC: "%{host_cc}"
+  HOST_GCC: "%{host_cc}"
+  HOST_CXX: "%{host_cxx}"
+  HOST_GXX: "%{host_cxx}"
+  HOST_LD: "%{host_ld}"
+
+  HOST_ADDR2LINE: "%{host_addr2line}"
+  HOST_AR: "%{host_ar}"
+  HOST_AS: "%{host_as}"
+  HOST_CPP: "%{host_cpp}"
+  HOST_NM: "%{host_nm}"
+  HOST_RANLIB: "%{host_ranlib}"
+  HOST_READELF: "%{host_readelf}"
+  HOST_OBJCOPY: "%{host_objcopy}"
+  HOST_OBJDUMP: "%{host_objdump}"
+  HOST_SIZE: "%{host_size}"
+  HOST_STRINGS: "%{host_strings}"
+  HOST_STRIP: "%{host_strip}"
+
+
+# This is a commonly overwritten file between components. Just don't artifact it:
+config:
+  install-commands:
+    (>):
+      - rm -f %{install-root}%{path_staging_sysroot}/usr/share/info/dir
+      - rm -f %{install-root}%{path_staging_imageprep}/usr/share/info/dir

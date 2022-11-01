@@ -1,0 +1,6 @@
+# Sanity check:
+(?):
+- ((platform == "rpi") and (target_arch is not in ["arm", "armhf", "aarch64"])):
+    (!): |
+      Error: rpi platform selected but not an arm/aarch64 target_arch.
+

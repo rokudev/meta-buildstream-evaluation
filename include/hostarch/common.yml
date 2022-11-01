@@ -1,0 +1,43 @@
+# Variables for all hosts, regardless of host arch
+variables:
+  # By default, we use `host_triplet_full`, in order to fake-out x64 -> x64 cross-compiling
+  host_triplet: "%{host_arch}-linux-%{host_abi}"
+  host_triplet_full: "%{host_arch}-%{host_vendor}-linux-%{host_abi}"
+  host_abi: "gnu"
+  host_vendor: "unknown"
+
+  # TODO: this isn't needed unless we build our own host compiler (cur. using FDSDK-provided)
+  # Host Compilers
+  host_c_prefix: "%{host_triplet_full}-"
+  host_cc: "gcc"
+  host_cxx: "g++"
+  host_ld: "ld"
+  host_addr2line: "addr2line"
+  host_ar: "ar"
+  host_as: "as"
+  host_cpp: "cpp"
+  host_nm: "nm"
+  host_ranlib: "ranlib"
+  host_readelf: "readelf"
+  host_objcopy: "objcopy"
+  host_objdump: "objdump"
+  host_size: "size"
+  host_strings: "strings"
+  host_strip: "strip"
+
+  # Same thing for host tools:
+  host_cflags_common: >-
+    -O2
+  host_cppflags_common:
+  host_ldflags_common:
+  host_configureargs:
+
+  host_cflags: "%{host_cppflags_common} %{host_cflags_common} %{cflags-local}"
+  host_cppflags: "%{host_cppflags_common} %{cppflags-local}"
+  host_cxxflags: "%{host_cppflags_common} %{host_cflags_common} %{cflags-local} %{cxxflags-local}"
+  host_ldflags: "%{host_ldflags_common} %{ldflags-local}"
+  host_cfgargs: "%{host_configureargs} %{conf-local}"
+
+environment:
+  HOST: "%{host_triplet}"
+  HOST_TRIPLET: "%{host_triplet_full}"

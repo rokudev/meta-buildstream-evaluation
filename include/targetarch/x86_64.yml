@@ -1,0 +1,10 @@
+(@):
+- include/targetarch/common.yml
+- include/targetarch/64bit.yml
+
+variables:
+  kernel_arch: x86
+  kernel_soc_name: x86_64
+  kernel_dts_dir: ""
+  target_configureargs_arch: >-
+    --with-tune=generic

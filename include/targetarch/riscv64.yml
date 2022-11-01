@@ -1,0 +1,6 @@
+(@):
+- include/targetarch/common.yml
+- include/targetarch/64bit.yml
+
+variables:
+  kernel_arch: riscv

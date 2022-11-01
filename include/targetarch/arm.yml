@@ -1,0 +1,12 @@
+(@):
+- include/targetarch/common.yml
+
+variables:
+  target_abi: gnueabi
+  mcpu: cortex-a7
+
+  # target_configureargs_arch: >-
+  #   --with-float=soft
+  
+  target_cflags_arch: >-
+    -mcpu=%{mcpu}

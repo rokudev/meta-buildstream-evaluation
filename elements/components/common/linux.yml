@@ -1,0 +1,8 @@
+
+sources:
+- kind: tar
+  url: kernel:linux/kernel/v5.x/linux-5.15.67.tar.xz
+  ref: da47d9a80b694548835ccb553b6eb1a1f3f5d5cddd9e2bd6f4886b99ca14f940
+- kind: local
+  path: files/linux
+  directory: stuff4bst

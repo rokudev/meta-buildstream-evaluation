@@ -1,0 +1,69 @@
+(@):
+- elements/toolchain/pieces/common-all.yml
+
+sources:
+- kind: tar
+  url: gnu:glibc/glibc-2.35.tar.xz
+  ref: 5123732f6b67ccd319305efd399971d58592122bcc2a6518a1bd2510dd0cf52e
+- kind: patch_queue
+  path: patches/glibc
+
+
+variables:
+  build-dir: build_dir
+  conf-args: >-
+    --build=%{host_triplet_full}
+    --host=%{target_triplet_full}
+    --target=%{target_triplet_full}
+    --prefix=/usr
+    --with-headers=%{path_cross_toolchain_sysroot}/usr/include
+    --with-pkgversion="%{toolchain_name} GlibC"
+    --with-gnu-ld
+    --with-gnu-as
+    --without-cvs
+    --without-gd
+    --without-selinux
+    --disable-multilib
+    --disable-profile
+    --disable-werror
+    --disable-sanity-checks
+    --enable-kernel=3.2
+    --enable-add-ons
+    --enable-shared
+    --enable-obsolete-rpc
+    --enable-stack-protector=strong
+    --enable-bind-now
+    %{target_configureargs_arch}
+    %{glibc_confvars}
+
+  glibc_confvars: >-
+    ac_cv_header_cpuid_h=yes
+    libc_cv_forced_unwind=yes
+    libc_cv_slibdir="/lib"
+    libc_cv_ssp_strong=no
+    libc_cv_ssp=no
+    use_ldconfig=no
+  
+  make-install-args: >-
+    install_root=%{install-root}%{path_cross_toolchain_sysroot}
+    %{glibc_confvars}
+
+
+# Since binutils owns the usr symlink, only temporarily create, then remove:
+config:
+  configure-commands:
+    (<):
+    - |
+      mkdir -p %{install-root}%{path_cross_toolchain_sysroot}
+      ln -sfv . %{install-root}%{path_cross_toolchain_sysroot}/usr
+      export %{glibc_confvars}
+    
+  build-commands:
+    (<):
+    - export %{glibc_confvars}
+    
+  install-commands:
+    (<):
+    - export %{glibc_confvars}
+
+  

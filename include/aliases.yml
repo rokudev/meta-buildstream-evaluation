@@ -1,0 +1,23 @@
+# GENERIC:
+# Mirroring requires some sort of alias and this is what FDSDK does:
+git_https: https://
+tar_https: https://
+
+# PUBLIC:
+alpine: https://dl-cdn.alpinelinux.org/alpine/
+boost: https://boostorg.jfrog.io/artifactory/
+busybox: https://www.busybox.net/downloads/
+cmake: https://cmake.org/files/
+dropbear: https://matt.ucc.asn.au/dropbear/
+freedesktop-sdk: https://releases.freedesktop-sdk.io/
+# Yes, the two 'github's are the same. Use 'public' for git, 'static' for tar. Something about bst mirrors.
+github-public: https://github.com/
+github-static: https://github.com/
+github-codeload: https://codeload.github.com/
+gitlab-public: https://gitlab.com/
+gnu: https://ftp.gnu.org/gnu/
+kernel: https://cdn.kernel.org/pub/
+openbsd: https://ftp.openbsd.org/pub/
+openwrt: https://git.openwrt.org/
+python: https://www.python.org/ftp/python/
+samba: https://download.samba.org/pub/

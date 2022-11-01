@@ -1,0 +1,28 @@
+# Including this squashfs.yml file will set appropriate variables for
+#   your imaging solution
+# Be sure to add 'components/host/squashfskit4.bst' as a dependency
+# TODO: Add that. See openwrt/tools/squashfskit4/Makefile
+
+variables:
+  rootfs_fs_type: squashfs
+  sqfs_comp_type: gzip
+  sqfs_blksz: 256
+  mkfs_root_cmd: mksquashfs4
+  mkfs_root_args: >-
+    -nopad
+    -noappend
+    -root-owned
+    -comp %{sqfs_comp_type}
+    -b %{sqfs_blksz}k
+    -p '/dev d 755 0 0'
+    -p '/dev/console c 600 0 0 5 1'
+    -no-xattrs
+  mkfs_root_directory: >-
+    %{path_staging_imageprep}
+  # cmd directory_to_base_filesystem filename -args
+  mkfs_root: >-
+    %{mkfs_root_cmd}
+    %{mkfs_root_directory}
+    %{inter_img_root}
+    %{mkfs_root_args}
+    

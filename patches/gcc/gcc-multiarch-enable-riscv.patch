@@ -1,0 +1,9 @@
+diff -ur gcc.old/gcc/config/riscv/t-riscv gcc/gcc/config/riscv/t-riscv
+--- gcc.old/gcc/config/riscv/t-riscv	2021-05-05 13:30:12.184099486 +0200
++++ gcc/gcc/config/riscv/t-riscv	2021-05-05 13:31:24.444229947 +0200
+@@ -28,3 +28,5 @@
+ $(common_out_file): $(srcdir)/config/riscv/riscv-cores.def \
+     $(srcdir)/config/riscv/riscv-protos.h \
+     $(srcdir)/config/riscv/riscv-subset.h
++
++MULTIARCH_DIRNAME = riscv64-linux-gnu

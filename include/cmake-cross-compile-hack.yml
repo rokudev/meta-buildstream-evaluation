@@ -1,0 +1,14 @@
+# TODO This needs to be converted to a BuildStream plugin of its own kind
+#      This is an incredibly ugly hack.
+
+# First, we're hacking in an automatic dependency to the CMake host tool
+build-depends:
+  (>):
+    - components/host/cmake.bst
+
+# Second, CMake needs to set %{make} and %{make-install} a bit differently.
+# See https://github.com/apache/buildstream-plugins/blob/master/src/buildstream_plugins/elements/cmake.yaml
+# So, for any cross-compiled CMake apps, need to override those two vars:
+variables:
+  make: cmake --build %{build-dir} -- ${JOBS}
+  make-install: env DESTDIR="%{destdir}" cmake --build %{build-dir} --target install

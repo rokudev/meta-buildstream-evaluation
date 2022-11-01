@@ -1,0 +1,13 @@
+--- gcc-old/gcc/gcc.cc	2022-05-06 10:30:57.000000000 +0300
++++ gcc/gcc/gcc.cc	2022-05-07 19:32:28.315136608 +0300
+@@ -8733,7 +8733,9 @@
+ 
+   if (print_multi_os_directory)
+     {
+-      if (multilib_os_dir == NULL)
++      if (multiarch_dir != NULL)
++	printf ("%s\n", multiarch_dir);
++      else if (multilib_os_dir == NULL)
+ 	printf (".\n");
+       else
+ 	printf ("%s\n", multilib_os_dir);

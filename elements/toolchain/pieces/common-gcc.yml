@@ -1,0 +1,131 @@
+(@):
+- elements/toolchain/pieces/common-all.yml
+
+sources:
+- kind: tar
+  url: gnu:gcc/gcc-12.2.0/gcc-12.2.0.tar.xz
+  ref: e549cf9cf3594a00e27b6589d4322d70e0720cdd213f39beb4181e06926230ff
+- kind: patch_queue
+  path: patches/gcc
+- kind: tar
+  url: gnu:gmp/gmp-6.2.1.tar.xz
+  directory: gmp
+  ref: fd4829912cddd12f84181c3451cc752be224643e87fac497b69edddadc49b4f2
+- kind: tar
+  url: gnu:mpfr/mpfr-4.1.0.tar.xz
+  directory: mpfr
+  ref: 0c98a3f1732ff6ca4ea690552079da9c597872d30e96ec28414ee23c95558a7f
+- kind: tar
+  url: gnu:mpc/mpc-1.2.1.tar.gz
+  directory: mpc
+  ref: 17503d2c395dfcf106b622dc142683c1199431d095367c6aacba6eec30340459
+# GCC, for Graphite, add ISL and ClooG:
+# - kind: tar
+#   url: tar_https:libisl.sourceforge.io/isl-0.25.tar.xz
+#   directory: isl
+#   ref: be7b210647ccadf90a2f0b000fca11a4d40546374a850db67adb32fad4b230d9
+# - kind: tar
+#   url:
+#   ref:
+#   directory: cloog
+
+
+variables:
+  build-dir: build_dir
+
+  # gcc_version: "12.2.0"  # How to export this variable to other elements???
+
+  gcc_crossarch_opts:
+  (?):
+  - target_arch == host_arch:
+      gcc_crossarch_opts: >-
+        --enable-initfini-array
+  - target_arch == "armhf":
+      gcc_crossarch_opts: >-
+        --with-arch=armv7-a
+        --with-fpu=vfpv3-d16
+        --with-float=hard
+  - target_arch == "arm":
+      gcc_crossarch_opts: >-
+        --with-arch=armv7-a
+        --with-float=soft
+
+  # These options apply to all 3 created GCC variants
+  conf-args: >-
+    --build=%{host_triplet_full}
+    --host=%{host_triplet_full}
+    --target=%{target_triplet_full}
+    --prefix=%{path_cross_toolchain}
+    %{confdirargs}
+    --with-sysroot=%{path_cross_toolchain_sysroot}
+    --with-headers=%{path_cross_toolchain_sysroot}/usr/include
+    --with-slib-dir=%{path_cross_toolchain_sysroot}/lib
+    --with-build-time-tools=%{path_cross_toolchain}/bin
+    --with-pkgversion="%{toolchain_name} GCC"
+    --with-diagnostics-color=auto-if-env
+    --with-gnu-ld
+    --with-gnu-as
+    --enable-languages=c,c++,lto
+    --enable-plugin
+    --enable-shared
+    --enable-lto
+    --enable-long-long
+    --enable-target-optspace
+    --enable-threads
+    --disable-bootstrap
+    --disable-decimal-float
+    --disable-libgomp
+    --disable-libmudflap
+    --disable-libsanitizer
+    --disable-libssp
+    --disable-multilib
+    --disable-nls
+    --disable-static
+    --with-host-libstdcxx=-lstdc++
+    --with-diagnostics-color=auto-if-env
+    --enable-__cxa_atexit
+    --enable-libstdcxx-dual-abi
+    --with-default-libstdcxx-abi=new
+    %{docdisableargs}
+    %{gcc_crossarch_opts}
+    %{target_configureargs_arch}
+
+
+# public:
+#   bst:
+#     toolchain_gcc_version: "%{gcc_version}"  # I don't understand what this does.
+
+
+environment:
+  CC: "%{host_cc}"
+  GCC: "%{host_cc}"
+  CXX: "%{host_cxx}"
+  GXX: "%{host_cxx}"
+  LD: "%{host_ld}"
+  ADDR2LINE: "%{host_addr2line}"
+  AR: "%{host_ar}"
+  AS: "%{host_as}"
+  CPP: "%{host_cpp}"
+  NM: "%{host_nm}"
+  RANLIB: "%{host_ranlib}"
+  READELF: "%{host_readelf}"
+  OBJCOPY: "%{host_objcopy}"
+  OBJDUMP: "%{host_objdump}"
+  SIZE: "%{host_size}"
+  STRINGS: "%{host_strings}"
+  STRIP: "%{host_strip}"
+
+  CFLAGS: "-O2"
+  # Only inherit cross-arch-specific cpp flags
+  CFLAGS_FOR_TARGET: "-O2 %{target_cppflags_arch}"
+  CXXFLAGS_FOR_TARGET: "-O2 %{target_cppflags_arch}"
+
+
+config:
+  configure-commands:
+    (<):
+    - |
+      if [[ "%{host_arch}" == "x86_64" ]]; then
+        echo "fixing x64"
+        sed -e '/m64=/s/lib64/lib/' -i.orig gcc/config/i386/t-linux64
+      fi

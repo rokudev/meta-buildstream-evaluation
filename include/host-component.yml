@@ -1,0 +1,40 @@
+# Due to YAML list weirdness, make sure this is the FIRST file you include in your component
+# Include this file from your component if it compiles for the host
+depends:
+  - base/base.bst
+
+build-depends: []
+
+variables:
+  # FDSDK uses symlinks for host to /usr and /bin
+  # Set these appropriately so autotools config&install just magically works:
+  sbindir: "%{bindir}"
+
+environment:
+  IS_CROSS_COMPILING: "false"
+
+  DESTDIR: "%{install-root}"
+
+  CFLAGS: "%{host_cflags}"
+  CPPFLAGS: "%{host_cppflags}"
+  CXXFLAGS: "%{host_cxxflags}"
+  LDFLAGS: "%{host_ldflags}"
+
+  CC: "%{host_cc}"
+  GCC: "%{host_cc}"
+  CXX: "%{host_cxx}"
+  GXX: "%{host_cxx}"
+  LD: "%{host_ld}"
+
+  ADDR2LINE: "%{host_addr2line}"
+  AR: "%{host_ar}"
+  AS: "%{host_as}"
+  CPP: "%{host_cpp}"
+  NM: "%{host_nm}"
+  RANLIB: "%{host_ranlib}"
+  READELF: "%{host_readelf}"
+  OBJCOPY: "%{host_objcopy}"
+  OBJDUMP: "%{host_objdump}"
+  SIZE: "%{host_size}"
+  STRINGS: "%{host_strings}"
+  STRIP: "%{host_strip}"

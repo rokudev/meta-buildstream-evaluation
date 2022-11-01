@@ -1,0 +1,17 @@
+(@):
+- include/targetarch/common.yml
+
+variables:
+  target_arch: arm
+  target_abi: gnueabihf
+  kernel_arch: arm
+  mcpu: cortex-a7
+  mfpu: neon-vfpv4
+
+  # target_configureargs_arch: >-
+  #   --with-float=hard
+  
+  target_cflags_arch: >-
+    -mcpu=%{mcpu}
+    -mfpu=%{mfpu}
+    -mfloat-abi=hard

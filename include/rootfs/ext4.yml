@@ -1,0 +1,23 @@
+# Including this ext4.yml file will set appropriate variables for
+#   your imaging solution
+# Be sure to add 'components/host/make-ext4fs.bst' as a dependency
+
+variables:
+  rootfs_fs_type: ext4
+  mkfs_root_cmd: make_ext4fs
+  # -l should be in bytes, so convert: %{rootfs_sz}*1024*1024
+  # Should come out to 65536 for 64MB bootfs_sz at 1024 blksz
+  mkfs_root_args: >-
+    -L rootfs
+    -l $(echo $((%{rootfs_sz}*1024*1024)))
+    -b %{rootfs_blksz}
+    -J
+    -v
+  mkfs_root_directory: >-
+    %{path_staging_imageprep}
+  # cmd -args filename directory_to_base_filesystem
+  mkfs_root: >-
+    %{mkfs_root_cmd}
+    %{mkfs_root_args}
+    %{inter_img_root}
+    %{mkfs_root_directory}
