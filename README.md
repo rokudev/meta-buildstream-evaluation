@@ -12,9 +12,11 @@ Some documentation was also created for new user onboarding with BuildStream. Ch
 
 ## Organization and Architecture Design
 
-This BuildStream 2 project is quite different in comparison to other BuildStream projects. For example, FreeDesktopSDK's primary focus is for cross-compiling for Flatpak containers, which has drastically different goals than what is needed for cross-compiling for Embedded Linux environments.
+This BuildStream 2 project is quite different in comparison to other BuildStream projects.
 
-It was needed to re-design some sort of cross-compilation support from scratch. Looking back at this, it would have been much better to implement this as BuildStream Plugins, instead of just having include'd YAML files, but here we are. Ultimately, what BuildStream needs is some equivalent to OpenEmbedded, which has a proven known working architecture design for cross-compiling for Embedded Linux environments. We attempted to do that here using experience with other build systems.
+For example, FreedesktopSDK strives to build their outputs out of minimal binary seed instead of basing on inputs from distros. It also cross-compiles as little as possible (It cross-compiles its compilers, everything after is native build). FreedesktopSDK also facilitate producing reproducible natively build outputs for wide ranges of target architectures; some examples of those outputs are OS images, VMs, ICO/docker images or flatpak runtimes. If getting and architecture different from yous host is needed, that can be achieved with, for example, [Remote Execution](https://github.com/bazelbuild/remote-apis).
+
+As we needed a more classical cross-compilation approach, It was needed to re-design some sort of cross-compilation support from scratch. Looking back at this, it would have been much better to implement this as BuildStream Plugins, instead of just having include'd YAML files, but here we are. Ultimately, what BuildStream needs is some equivalent to OpenEmbedded, which has a proven known working architecture design for cross-compiling for Embedded Linux environments. We attempted to do that here using experience with other build systems.
 
 ### Directory Layout
 
