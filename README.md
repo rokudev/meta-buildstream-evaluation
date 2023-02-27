@@ -14,7 +14,7 @@ Some documentation was also created for new user onboarding with BuildStream. Ch
 
 This BuildStream 2 project is quite different in comparison to other BuildStream projects.
 
-For example, FreedesktopSDK strives to build their outputs out of minimal binary seed instead of basing on inputs from distros. It also cross-compiles as little as possible (It cross-compiles its compilers, everything after is native build). FreedesktopSDK also facilitate producing reproducible natively build outputs for wide ranges of target architectures; some examples of those outputs are OS images, VMs, ICO/docker images or flatpak runtimes. If getting and architecture different from yous host is needed, that can be achieved with, for example, [Remote Execution](https://github.com/bazelbuild/remote-apis).
+For example, FreedesktopSDK specializes in providing natively built outputs of OS images, VMs, ICO/Docker images, and/or Flatpak runtimes while cross-compiling as little as possible. Targetting architectures outside of native builds can be done utilizing [Remote Execution](https://github.com/bazelbuild/remote-apis), QEMU, or the FreedesktopSDK bootstrap cross-compilers to build your own system.
 
 As we needed a more classical cross-compilation approach, It was needed to re-design some sort of cross-compilation support from scratch. Looking back at this, it would have been much better to implement this as BuildStream Plugins, instead of just having include'd YAML files, but here we are. Ultimately, what BuildStream needs is some equivalent to OpenEmbedded, which has a proven known working architecture design for cross-compiling for Embedded Linux environments. We attempted to do that here using experience with other build systems.
 
@@ -23,7 +23,7 @@ As we needed a more classical cross-compilation approach, It was needed to re-de
 | Path | Description |
 |---|---|
 | /elements | Individual build pieces |
-| /elements/base | Sandbox elements -- Currently FreeDesktopSDK |
+| /elements/base | Sandbox elements -- Currently FreedesktopSDK |
 | /elements/components | Components, sorted by group |
 | /elements/components/common | YAML files that can be included by components in 'host' and/or 'target' |
 | /elements/components/host | Components that are intended as a host tool |
@@ -45,7 +45,7 @@ As we needed a more classical cross-compilation approach, It was needed to re-de
 
 ### Explanations
 
-This uses the FreeDesktopSDK Bootstrap environment as the base 'sandbox' system. It includes a GCC 11 compiler. They provide both x86_64 and aarch64 variants of it, but this was only tested with the x86_64 version.
+This uses the FreedesktopSDK Bootstrap environment as the base 'sandbox' system. It includes a GCC 11 compiler. They provide both x86_64 and aarch64 variants of it, but this was only tested with the x86_64 version.
 
 It would have been ideal to drop FDSDK entirely and create our own sandbox, but this works fine. This is all located in `elements/base` if you're interested.
 
