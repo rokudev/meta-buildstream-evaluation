@@ -3,13 +3,13 @@ description: Linux Kernel!
 
 # Includes: CCC.yml MUST come first -- we are overriding some items.
 (@):
-- include/cross-compile-component.yml
-- elements/components/common/linux.yml
+  - include/cross-compile-component.yml
+  - elements/components/common/linux.yml
 
 build-depends:
   (>):
-  - components/host/rsync.bst
-  - components/host/bc.bst
+    - components/host/rsync.bst
+    - components/host/bc.bst
   # perl, already in FDSDK
 
 variables:
@@ -32,15 +32,14 @@ variables:
     echo "Not stripping kernel modules"
     echo "  (I mean I can, but it would probably make them useless)"
 
-
 environment:
   ARCH: "%{kernel_arch}"
   # compile.h has hardcoded timestamp, let's seed it
-  KBUILD_BUILD_TIMESTAMP: 'Thu Nov 10 15:00:00 UTC 2011'
-  KBUILD_BUILD_USER: 'popcorn'
-  KBUILD_BUILD_HOST: 'buildstream'
+  KBUILD_BUILD_TIMESTAMP: "Thu Nov 10 15:00:00 UTC 2011"
+  KBUILD_BUILD_USER: "popcorn"
+  KBUILD_BUILD_HOST: "buildstream"
   KBUILD_BUILD_VERSION: "0"
-  KBUILD_HAVE_NLS: 'no'
+  KBUILD_HAVE_NLS: "no"
   V: 1
 
 config:
@@ -116,7 +115,7 @@ config:
       if [ -d "%{kernel_dtsdir}" ]; then
         echo "~+=== Packaging DTS Files"
         cd %{kernel_dtsdir}
-        tar cJf %{destdir}%{path_boot}/%{kernel_arch}_dts.tar.xz ./*
+        tar cJf %{destdir}%{path_boot}/%{kernel_arch}_dts.tar.xz ./* || true
       else
         echo "~+=== No DTS Files to Package!"
       fi
